@@ -1,0 +1,12 @@
+{
+    "database":
+    {
+        "username": "localhost",
+        "password":"1234"
+    },
+    "telegram":
+    {
+        "gp_id":"",
+        "debug_gp_id":""
+    }
+}
