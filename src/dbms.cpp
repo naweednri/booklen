@@ -1,26 +1,25 @@
 #include "dbms.h"
 #include <stdio.h>
+
 // using std::string;
 using std::cout;
 using std::endl;
-Dbms::Dbms(string ip,string port,string usr,string passwd) : ip(ip),port(port),usr(usr),passwd(passwd)
+using std::string;
+class Member;
+Dbms::Dbms(string dbName,string ip,string port,string usr,string passwd) : dbName(dbName),ip(ip),port(port),usr(usr),passwd(passwd),status(0)
 {
-    
-
+    string temp = ip + ","+port+"@"+dbName;
     try {
-        con.Connect(_TSA("127.0.0.1,3306@booklend"), _TSA("root"), _TSA("1234"),SA_MySQL_Client);
+        con.Connect(_TSA(temp.c_str()),_TSA(usr.c_str()),_TSA(passwd.c_str()),SA_MySQL_Client);
         printf("We are connected!\n");
-
-        /*
-        The rest of the tutorial goes here!
-        */
+        status = 1;
 
         
-        printf("We are disconnected!\n");
     }
     catch(SAException &x) {
         con.Rollback();
         printf("%s\n", x.ErrText().GetMultiByteChars());
+        status =0;
     }
        
         
@@ -32,20 +31,26 @@ void Dbms::connect()
 {
     
 }
-std::string Dbms::getUsername(int id)
+// class Member;
+Member* Dbms::getUser(int id,Member* memb)
 {
     
-    SACommand select( &con, _TSA("SELECT fname, age FROM user "));
+
+    
+    SACommand select( &con, _TSA("SELECT * FROM user "));
     select.Execute();
     select.FetchNext();
-    SAString name = select[1].asString();
+    SAString name = select[2].asString();
+    memb->fname =select.Field(_TSA("fname")).asString().GetMultiByteChars();
+    memb->lname = select.Field(_TSA("lname")).asString().GetMultiByteChars();
+    memb->phone = select.Field(_TSA("phone")).asString().GetMultiByteChars();
+    // memb->rank = select.Field(_TSA("rank")).asString().GetMultiByteChars();
     
-    printf("%s\n",select.Field(_TSA("fname")).asString().GetMultiByteChars());
-    return test;
+    return memb;
 }
 
 Dbms::~Dbms()
 {
-    std::cout<<"destructor"<<std::endl;
+    std::cout<<"disconnected...!"<<std::endl;
     con.Disconnect();
 }

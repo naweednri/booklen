@@ -1,21 +1,34 @@
 // #include <mysqlx/xdevapi.h>
+#ifndef DBMS_H
+#define DBMS_H
+
 #include <SQLAPI.h>
 #include <iostream>
+#include <vector>
+
+
+#include "mem.h"
+
 
 using std::string;
 using std::cout;
 using std::endl;
 // using namespace ::mysqlx;
+class Member;
 class Dbms{
 public:
-    Dbms(string ip,string port,string usr,string passwd);
+    Dbms(string dbName,string ip,string port,string usr,string passwd);
     virtual ~Dbms();
+    friend class Member;
+    
     void connect();
-    string getUsername(int);
-    //if connected to db, status var will be 1
+    Member* getUser(int,Member*);
+    //if connected to db, status will be 1
     bool status;
 private:
-    
-    SAConnection con;
-    string ip,port,usr,passwd,buff;
+    // Member* tempUser;
+
+    static SAConnection con;
+    string ip,port,usr,passwd,buff,dbName;
 };
+#endif
